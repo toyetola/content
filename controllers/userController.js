@@ -73,7 +73,7 @@ exports.login = async (req, res, next) => {
         .where({
             email: user.email,
         })
-        .returning('*')
+        .returning('*') 
         .execute()
     
         return res.status(200).json({data: { id: result.raw[0].id, email: result.raw[0].email, role: result.raw[0].role }, accessToken})
@@ -155,7 +155,8 @@ exports.deleteUser = async (req, res) => {
 
 exports.logout = async (req, res) => {
     const user = await getUserModel.findOneBy({
-        id: req.user
+        id: req.user,
+        select: ['accessToken']
     })
     jwt.destroy(user.accessToken) 
     return res.status(200).json({message:"logged out"})

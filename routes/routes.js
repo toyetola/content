@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const {signup, login, update, showAll, showOne, deleteUser, logout} = require("../controllers/userController")
+const { resetPassword, startResetPassword } = require("../controllers/authController")
 const {createPost , showAllPosts, showPost, updatePost,  deletePost} = require("../controllers/postController")
 const {createCategory , showAllCategories, showCategory, updateCategory,  deleteCategory} = require("../controllers/categoryController")
 const verifyToken = require("../middlewares/authMiddleware");
@@ -17,6 +18,8 @@ router.get("/", (req, res)=>{
 // Authentication routes
 router.post("/api/"+version+"/signup", signup)
 router.post("/api/"+version+"/login", login)
+router.post('/api/'+version+"/tryresetPassword", startResetPassword)
+router.patch('/api/'+version+"/resetPassword", resetPassword)
 
 router.use(verifyToken)
 
