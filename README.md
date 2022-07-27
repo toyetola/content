@@ -10,6 +10,8 @@ Install all dependencies of this application by running
 
 ```npm install```
 
+You can run ```npm start``` to see if your application run on port 3000 at this point but database won't be connected
+
 Documentation of API endpoints usage is here:
 
 https://documenter.getpostman.com/view/3707157/UzXNUHNi
