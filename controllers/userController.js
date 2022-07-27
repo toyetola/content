@@ -154,10 +154,20 @@ exports.deleteUser = async (req, res) => {
 
 
 exports.logout = async (req, res) => {
-    const user = await getUserModel.findOneBy({
-        id: req.user,
-        select: ['accessToken']
+    const user = await getUserModel.findOne({
+        where:{id: req.user},
+        select: ['accessToken', 'email']
     })
-    jwt.destroy(user.accessToken) 
+    accessToken = null
+    const result = await getUserModel.createQueryBuilder()
+        .update({
+            accessToken
+        })
+        .where({
+            email: user.email,
+        })
+        .returning('*') 
+        .execute()
+    
     return res.status(200).json({message:"logged out"})
 }

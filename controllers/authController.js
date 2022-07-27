@@ -1,4 +1,4 @@
-const {User} = require("../src/entity/User") 
+const { User } = require("../src/entity/User") 
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const { AppDataSource } = require("../src/data-source")
@@ -32,26 +32,22 @@ exports.startResetPassword = async (req, res)=>{
                 select: ['id', 'email','password', 'firstname', 'lastname', 'password_recovery_token'],
                 where: { email:req.body.email }
             })
-            console.log(user)
+            
             if (user) {
                 const token = await generateRndomString(7)
-                // const password_reset_token = token
+                const password_recovery_token = token
                 user.password_recovery_token = token
                 const result = await getUserModel.createQueryBuilder()
-                .update(User)
-                .set({ password_reset_token: token })
-                .where("email = :email", { email: user.email })
-                .execute()
-                /* .update({
-                    password_reset_token:password_reset_token
+                .update({
+                    password_recovery_token
                 })
                 .where({
                     email: user.email,
                 })
-                .returning('*')
-                .execute() */
-                console.log(result)
-                return res.status(200).json({"message":"acount exists", data: token, "visit":process.env.APP_URL+"/api/v1/resetPassword"})            
+                .returning('*') 
+                .execute()
+        
+                return res.status(200).json({"message":"acount exists got the url with token provided in data", data: token, "visit":process.env.APP_URL+"/api/v1/resetPassword"})            
             }
             return res.status(403).json({"error":"user does not exist"})
         }
@@ -72,12 +68,13 @@ exports.resetPassword = async (req, res)=>{
                 select: ['email', 'password', 'password_recovery_token'],
                 where: { password_recovery_token:req.body.token }
             })
+            
             if (user) {
                 const hashedPassword = await hashPassword(req.body.new_password)
                 const result = await getUserModel.createQueryBuilder()
                 .update({
                     password : hashedPassword,
-                    password_reset_token : null
+                    password_recovery_token : null
                 })
                 .where({
                     email: user.email,
@@ -97,12 +94,12 @@ exports.resetPassword = async (req, res)=>{
 
 
 //log users out
-exports.logout = async (req, res) => {
+/* exports.logout = async (req, res) => {
     const user = await getUserModel.findOneBy({
         select:['accessToken'],
         id: req.user
     })
     jwt.destroy(user.accessToken) 
     return res.status(200).json({message:"logged out"})
-}
+} */
 

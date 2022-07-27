@@ -70,7 +70,7 @@ exports.showCategory = async(req, res) => {
 
 exports.updateCategory = async(req, res) => {
     try {
-        const loggedInUser = getloggedInUser(req)
+        const loggedInUser = await getloggedInUser(req)
         
         const category = await getCategoryModel.findOneBy({
             id: req.params.categoryId
@@ -79,17 +79,15 @@ exports.updateCategory = async(req, res) => {
             return res.status(401).json({"error":"category not found"})
         }
 
-        if (category.userId != loggedInuser.id) {
+        if (loggedInUser.role != "admin") {
             return res.status(401).json({"error":"You cannot make any change to this: you did not create the resource"})
         }
 
-        const {title, content, categoryId} = req.body
+        const {name} = req.body
 
         const result = await getCategoryModel.createQueryBuilder()
         .update({
-            title,
-            content,
-            categoryId
+            name
         })
         .where({
             id: category.id,
@@ -97,7 +95,7 @@ exports.updateCategory = async(req, res) => {
         .returning('*')
         .execute()
 
-        return res.status(200).json({"message":"user fetch successfully", data:result.raw[0]})
+        return res.status(200).json({"message":"update successfull", data:result.raw[0]})
          
     } catch (error) {
         return res.send(error)

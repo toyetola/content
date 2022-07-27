@@ -23,7 +23,7 @@ router.patch('/api/'+version+"/resetPassword", resetPassword)
 
 router.use(verifyToken)
 
-router.post("/api/"+version+"/logout", logout)
+router.get("/api/"+version+"/logout", logout)
 
 // Post API routes
 /* 

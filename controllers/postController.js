@@ -65,7 +65,7 @@ exports.showPost = async(req, res) => {
 
 exports.updatePost = async(req, res) => {
     try {
-        const loggedInUser = getloggedInUser(req)
+        const loggedInUser = await getloggedInUser(req)
         
         const post = await getPostModel.findOneBy({
             id: req.params.postId
@@ -74,17 +74,21 @@ exports.updatePost = async(req, res) => {
             return res.status(401).json({"error":"Post not found"})
         }
 
-        if (post.userId != loggedInuser.id) {
+        console.log(postId)
+        console.log(loggedInUser.id)
+
+        if (post.userId != loggedInUser.id) {
             return res.status(401).json({"error":"You cannot make any change to this: you did not create the resource"})
         }
 
         const {title, content, categoryId} = req.body
-
+        const userId = loggedInUser.id
         const result = await getPostModel.createQueryBuilder()
         .update({
             title,
             content,
-            categoryId
+            categoryId,
+            userId
         })
         .where({
             id: post.id,
